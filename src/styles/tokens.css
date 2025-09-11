@@ -1,0 +1,12 @@
+:root {
+  /* stronger, more saturated primary palette for buttons and accents */
+  --color-primary: #4F46E5; /* indigo-600 */
+  --color-primary-600: #4338CA; /* indigo-700 */
+  --color-primary-contrast: #ffffff;
+  --color-accent: #7C3AED; /* purple-600 */
+  --color-bg: #F8FAFC; /* gray-50 */
+  /* softer, larger radius for a rounded, friendly look */
+  --radius-md: 1rem;
+  --shadow-soft: 0 10px 30px rgba(17,24,39,0.06);
+  --shadow-elev: 0 6px 20px rgba(79,70,229,0.09);
+}
