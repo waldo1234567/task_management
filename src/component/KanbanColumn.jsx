@@ -22,15 +22,16 @@ export default function KanbanColumn({ title, children, count, status, onDrop, w
   const cls = status ? `header-${String(status).toUpperCase()}` : '';
 
   return (
-    <div className={`column workspace-column ${isOver ? 'column-over' : ''}`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
-      <div className={`column-header ${cls}`}>
-        <div className="column-header-left">
-          <h3>{title}</h3>
-          {typeof count === 'number' && <div className="column-badge">{count}</div>}
+    <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
+      className={`w-72 bg-white rounded-lg p-3 shadow-sm ${isOver ? 'ring-2 ring-indigo-300' : ''}`}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold">{title}</h3>
+          {typeof count === 'number' && <div className="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full">{count}</div>}
         </div>
-        <div className="wip-indicator">{typeof count === 'number' ? `${count}` : ''}{wipLimit < Infinity ? ` / ${wipLimit}` : ''}</div>
+        <div className="text-xs text-gray-400">{typeof count === 'number' ? `${count}` : ''}{wipLimit < Infinity ? ` / ${wipLimit}` : ''}</div>
       </div>
-      <div className="column-body workspace-column-body">
+      <div className="min-h-[40px] space-y-3">
         {children}
       </div>
     </div>

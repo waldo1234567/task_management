@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Use Vite env variables. Define VITE_API_URL in .env for production/dev overrides.
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:6060/api';
 const USE_DUMMY = import.meta.env.VITE_USE_DUMMY === 'true';
 
 // simple in-memory tasks for dev when USE_DUMMY is enabled
@@ -73,7 +73,7 @@ export async function fetchTasks(token, projectId = null) {
     // return a shallow clone and filter by projectId when provided
     return _dummyTasks.filter((t) => (projectId ? String(t.projectId) === String(projectId) : true)).map((t) => ({ ...t }));
   }
-  const url = projectId ? `${API_BASE}/tasks?projectId=${encodeURIComponent(projectId)}` : `${API_BASE}/tasks`;
+  const url = projectId ? `${API_BASE}/tasks-by-project/${encodeURIComponent(projectId)}` : `${API_BASE}/tasks`;
   const res = await axios.get(url, { headers: makeHeaders(token) });
   return res.data;
 }
@@ -100,6 +100,7 @@ export async function createTask(task, token) {
   }
   // ensure status enum matches backend expectations
   const payload = { ...task };
+  console.log(payload);
   if (payload.status) payload.status = normalizeStatus(payload.status);
   if (payload.dueDate) payload.dueDate = new Date(payload.dueDate).toISOString();
   const res = await axios.post(`${API_BASE}/tasks`, payload, { headers: makeHeaders(token) });
@@ -123,6 +124,23 @@ export async function updateTask(id, updates, token) {
   if (payload.status) payload.status = normalizeStatus(payload.status);
   if (payload.dueDate) payload.dueDate = new Date(payload.dueDate).toISOString();
   const res = await axios.put(`${API_BASE}/tasks/${id}`, payload, { headers: makeHeaders(token) });
+  return res.data;
+}
+
+export async function moveTask(id, body = {}, token) {
+  if (USE_DUMMY) {
+    // naive local update: find task and set columnId/status/positionIndex if provided
+    const idx = _dummyTasks.findIndex((d) => d.id === String(id));
+    if (idx !== -1) {
+      const upd = { ...body };
+      if (upd.status) upd.status = normalizeStatus(upd.status);
+      _dummyTasks[idx] = { ..._dummyTasks[idx], ...upd, updatedAt: new Date().toISOString() };
+      await new Promise((r) => setTimeout(r, 80));
+      return { ..._dummyTasks[idx] };
+    }
+    throw new Error('Not found');
+  }
+  const res = await axios.post(`${API_BASE}/api/tasks/${id}/move`, body, { headers: makeHeaders(token) });
   return res.data;
 }
 

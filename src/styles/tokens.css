@@ -9,4 +9,8 @@
   --radius-md: 1rem;
   --shadow-soft: 0 10px 30px rgba(17,24,39,0.06);
   --shadow-elev: 0 6px 20px rgba(79,70,229,0.09);
+  --surface: #ffffff;
+  --muted-600: #6b7280;
+  --card-radius: 0.75rem;
+  --gap-md: 1rem;
 }

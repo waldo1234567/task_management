@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:6060';
 const USE_DUMMY = import.meta.env.VITE_USE_DUMMY === 'true';
 
 let _dummyProjects = [
@@ -27,7 +27,7 @@ export async function fetchProjects(token) {
     await new Promise((r) => setTimeout(r, 120));
     return _dummyProjects.map((p) => ({ ...p }));
   }
-  const res = await axios.get(`${API_BASE}/projects`, { headers: makeHeaders(token) });
+  const res = await axios.get(`${API_BASE}/api/me/projects`, { headers: makeHeaders(token) });
   return res.data;
 }
 
@@ -39,7 +39,22 @@ export async function createProject(payload, token) {
     await new Promise((r) => setTimeout(r, 90));
     return { ...p };
   }
-  const res = await axios.post(`${API_BASE}/projects`, payload, { headers: makeHeaders(token) });
+  const res = await axios.post(`${API_BASE}/api/projects`, payload, { headers: makeHeaders(token) });
+  return res.data;
+}
+
+export async function fetchBoard(projectId, token) {
+  if (USE_DUMMY) {
+    await new Promise((r) => setTimeout(r, 120));
+    // return a simple board with a single column when dummy
+    return [
+      {
+        column: { id: 'col-1', projectId, name: 'Backlog', positionIndex: 0, createdAt: new Date().toISOString() },
+        tasks: []
+      }
+    ];
+  }
+  const res = await axios.get(`${API_BASE}/api/projects/${encodeURIComponent(projectId)}/board`, { headers: makeHeaders(token) });
   return res.data;
 }
 
